@@ -1,13 +1,6 @@
 <template>
   <div id="toDo">
     <h1>ToDoリスト</h1>
-    <!--
-      概要：toDoStatus(v-model)にマッチした状態のtoDoリスト一覧を出力する
-      ロジック：
-      １．各ラジオボタンで、toDoStatus(v-model)を変更する
-      ２．toDoStatus(v-model)が変更されると、toDoListFilter(computedプロパティ)が呼ばれる
-      ３．toDoStatus(v-model)にマッチした状態のtoDoリスト一覧を出力する
-    -->
     <form>
       <label><input type="radio" value="すべて" v-model="toDoStatus" />すべて</label>
       <label><input type="radio" value="作業中" v-model="toDoStatus" />作業中</label>
@@ -23,11 +16,9 @@
         </tr>
       </thead>
       <tbody>
-        <!--概要：toDoListFilter(computedプロパティ)のリスト一覧を出力する-->
         <tr v-for="(toDo, index) of toDoListFilter" v-bind:key="index" :value="toDo">
           <td>{{index}}</td>
           <td>{{toDo.comment}}</td>
-          <!--概要：クリックすると'完了'と'作業中'のtoDoリストの状態が入れ替わる-->
           <button v-on:click="changeStatus(index)">{{toDo.workingStatus}}</button>
           <button v-on:click="cleanToDo(index)">削除</button>
         </tr>
@@ -48,34 +39,37 @@ export default {
       toDoStatus: 'すべて',
       comment: '',
       workingStatus: '作業中',
-      toDoList:[],
+      toDoList: [],
     };
   },
   methods: {
     addToDo: function() {
-      if (this.comment) {
+      if (!this.comment.match(/\S+/)) {
+        return alert('空白（半角スペース、全角スペース）のみの入力を禁止します。');
+      }
         this.toDoList.push({ workingStatus: '作業中', comment: this.comment });
         this.comment = '';
-      }
     },
     cleanToDo: function(index){
       this.toDoList.splice(index, 1);
     },
-    changeStatus:function(index){
+    changeStatus: function(index){
       if(this.toDoList[index].workingStatus === '作業中'){
-      this.toDoList[index].workingStatus = '完了';
+        return this.toDoList[index].workingStatus = '完了';
       }
-      else{
-        this.toDoList[index].workingStatus = '作業中';
+      else {
+        return this.toDoList[index].workingStatus = '作業中';
       }
     }
   },
-  computed:{
-    toDoListFilter:function(){
+  computed: {
+    toDoListFilter: function(){
+      //ラジオボタンの値（'作業中'、'完了'）と一致しているtodoを配列で返却する
       return this.toDoList.filter(function(el){
         if(el.workingStatus === this.toDoStatus){
           return el;
         }
+      //全てのtodoを配列で返却する
         else if(this.toDoStatus === 'すべて'){
           return el;
         }
